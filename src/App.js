@@ -1,7 +1,6 @@
 import React from 'react';
 import axios from 'axios';
 import Table from './components/Table'
-
 const columns = ['_id', 'content', 'nickName', 'createdAt', '__v'];
 export default class App extends React.Component {
 
@@ -84,7 +83,7 @@ export default class App extends React.Component {
   };
   
   render() {
-    const { nickName, content } = this.state;
+    const { nickName, content, data } = this.state;
     
     return (
       <div>
@@ -112,7 +111,7 @@ export default class App extends React.Component {
           <input type="submit" value="submit" /> 
         </form>
         <Table 
-          data={this.state.data}
+          data={data}
           columns={columns}
         />
       </div>
