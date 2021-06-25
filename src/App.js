@@ -1,5 +1,8 @@
-import axios from 'axios';
 import React from 'react';
+import axios from 'axios';
+import Table from './components/Table'
+
+const columns = ['_id', 'content', 'nickName', 'createdAt', '__v'];
 export default class App extends React.Component {
 
   HEADERS = {
@@ -12,18 +15,51 @@ export default class App extends React.Component {
     this.state = {
       nickName: '',
       content: '',
+      data: [],
     }
   }
 
+  componentDidMount() {
+    this.fetchPost();
+  }
+
   onChangeNickName = (event) => {
-    if(!event.target.value) return;
+    if (!event.target.value) return;
     this.setState({ nickName: event.target.value })
   }
 
   onChangeContent = (event) => {
-    if(!event.target.value) return;
+    if (!event.target.value) return;
     this.setState({ content: event.target.value })
   }
+
+  fetchPost = async () => {
+    const URL = 'http://dauth.daios.net/v1/boards';
+    return await axios
+      .get(URL, {
+        headers: {
+          ...this.HEADERS,
+        },
+      })
+      .then((response) => {
+        const { data } = response;
+        if (!data) {
+          alert('데이터 로드 중 오류가 발생했습니다.');
+          return;
+        }
+        if (!data.data || !data.data.length) {
+          alert('데이터가 없습니다.');
+          return;
+        }
+        console.log(JSON.stringify(response.data.data));
+        this.setState({
+          data: data.data,
+        })
+      })
+      .catch((error) => {
+        alert('데이터 로드 중 오류가 발생했습니다.');
+      })
+  };
 
   savePost = async (event) => {
     event.preventDefault()
@@ -41,14 +77,15 @@ export default class App extends React.Component {
       })
       .then((response) => {
         alert('게시물이 등록되었습니다.');
-      }).catch((error) => {
+      })
+      .catch((error) => {
         alert('게시물 등록중 오류가 발생했습니다.');
       })
   };
   
   render() {
     const { nickName, content } = this.state;
-
+    
     return (
       <div>
         <form onSubmit={this.savePost}>
@@ -74,6 +111,10 @@ export default class App extends React.Component {
           </label>
           <input type="submit" value="submit" /> 
         </form>
+        <Table 
+          data={this.state.data}
+          columns={columns}
+        />
       </div>
     )
   }
